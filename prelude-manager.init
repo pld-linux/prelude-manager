@@ -7,64 +7,49 @@
 # Source function library.
 . /etc/rc.d/init.d/functions
 
-[ -f /usr/bin/prelude-manager ] || exit 0
-
-prog="prelude-manager"
-
-start() {
-    if test "x`pidof prelude-manager`" != x; then
-	    echo "prelude-manager already started"
-	    action $"Starting $prog: " /bin/false
-	    RETVAL=1
-	    return $RETVAL
-    else
-	    echo -n $"Starting $prog: " 
-	    daemon prelude-manager -d
-	    RETVAL=$?
-	    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/prelude-manager
-	    echo
-	    return $RETVAL
-    fi
-}
-
-stop() {
-    if test "x`pidof prelude-manager`" != x; then
-	echo -n $"Stopping $prog: "
-	killproc prelude-manager
-	echo
-    fi
-    RETVAL=$?
-    [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/prelude-manager 
-    return $RETVAL
-}
-
 case "$1" in
-	start)
-	    start
-	    ;;
-	
-	stop)
-	    stop
-	    ;;
-	
-	status)
-	    status prelude-manager
-	    ;;
-	restart)
-	    stop
-	    sleep 3
-	    start
-	    ;;
-	condrestart)
-	    if test "x`pidof prelude-manager`" != x; then
-		stop
-		start
+    start)
+	    if [ ! -f /var/lock/subsys/prelude-manager ]; then
+		msg_starting "Prelude Manager"
+		daemon prelude-manager -d
+		RETVAL=$?
+		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/prelude-manager
+	    else
+		msg_already_running "Prelude Manager"
 	    fi
 	    ;;
 	
-	*)
-	    echo $"Usage: $0 {start|stop|restart|condrestart|status}"
-	    exit 1
+    stop)
+	    if [ -f /var/lock/subsys/prelude-manager ]; then
+		msg_stopping "Prelude Manager"
+		killproc prelude-manager
+		rm -f /var/lock/subsys/prelude-manager
+	    fi
+	    ;;
+
+    restart)
+	    $0 stop
+	    $0 start
+	    exit $?
+    
+    reload|force-reload)
+	    if [ -f /var/lock/subsys/prelude-manager ]; then
+		msg_reloading "Prelude Manager"
+		killproc prelude-manager -HUP
+		RETVAL=$?
+	    else
+		msg_not_running prelude-manager >&2
+		exit 7
+	    fi
+	    ;;
+
+    status)
+	    status prelude-manager
+    ;;
+
+    *)
+    echo $"Usage: $0 {start|stop|restart|condrestart|status}"
+    exit 1
 
 esac
 

@@ -31,6 +31,7 @@ case "$1" in
 	    $0 stop
 	    $0 start
 	    exit $?
+	    ;;
     
     reload|force-reload)
 	    if [ -f /var/lock/subsys/prelude-manager ]; then

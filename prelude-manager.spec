@@ -50,6 +50,22 @@ install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/%{name}
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%post
+/sbin/chkconfig --add prelude-manager
+if [ -f /var/lock/subsys/prelude-manager ]; then
+        /etc/rc.d/init.d/prelude-manager restart 1>&2
+else
+        echo "Run \"/etc/rc.d/init.d/prelude-manager start\" to start Prelude Manager."
+fi
+
+%preun
+if [ "$1" = "0" ]; then
+        if [ -f /var/lock/subsys/prelude-manager ]; then
+                /etc/rc.d/init.d/prelude-manager stop 1>&2
+        fi
+        /sbin/chkconfig --del prelude-manager
+fi
+
 %files
 %defattr(644,root,root,755)
 %doc AUTHORS ChangeLog NEWS README

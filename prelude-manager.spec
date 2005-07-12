@@ -1,4 +1,5 @@
 Summary:	A Network Intrusion Detection System
+Summary(pl):	System do wykrywania intruzów w sieci
 Name:		prelude-manager
 %define	_rc	rc6
 Version:	0.9.0
@@ -10,24 +11,31 @@ Source0:	http://www.prelude-ids.org/download/releases/%{name}-%{version}-%{_rc}.
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 URL:		http://www.prelude-ids.org/
+BuildRequires:	gnutls-devel
 BuildRequires:	libprelude-devel >= 0.9.0
 BuildRequires:	libpreludedb-devel >= 0.9.0
 BuildRequires:	libxml2-devel
-BuildRequires:	gnutls-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
-Prelude LML analyze log files and transmit to prelude some
-informations. Prelude LML also use syslog to listen for some others
-applications, like NTSyslog.
+The Prelude-Manager is a high-availability server which collects and
+normalizes events from distributed sensors.
+
+%description -l pl
+Prelude-Manager to serwer o wysokiej dostêpno¶ci zbieraj±cy i
+normalizuj±cy zdarzenia od rozproszonych czujników.
 
 %package devel
-Summary:	Header files and develpment documentation for prelude-manager
+Summary:	Header files for prelude-manager
+Summary(pl):	Pliki nag³ówkowe dla prelude-managera
 Group:		Development/Libraries
-Requires:	%{name}-libs = %{epoch}:%{version}-%{release}
+Requires:	%{name} = %{version}-%{release}
 
 %description devel
-Header files and develpment documentation for prelude-manager.
+Header files for prelude-manager.
+
+%description devel -l pl
+Pliki nag³ówkowe dla prelude-managera.
 
 %prep
 %setup -q -n %{name}-%{version}-%{_rc}

@@ -18,7 +18,7 @@ case "$1" in
 		msg_already_running "Prelude Manager"
 	    fi
 	    ;;
-	
+
     stop)
 	    if [ -f /var/lock/subsys/prelude-manager ]; then
 		msg_stopping "Prelude Manager"
@@ -32,7 +32,7 @@ case "$1" in
 	    $0 start
 	    exit $?
 	    ;;
-    
+
     reload|force-reload)
 	    if [ -f /var/lock/subsys/prelude-manager ]; then
 		msg_reloading "Prelude Manager"

@@ -13,12 +13,14 @@ Source0:	http://www.prelude-ids.org/download/releases/%{name}-%{version}.tar.gz
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 URL:		http://www.prelude-ids.org/
-Requires:	libprelude >= 0.9.7.2
-Requires:	libpreludedb >= 0.9.7.1
 BuildRequires:	gnutls-devel
 BuildRequires:	libprelude-devel >= 0.9.7.2
 BuildRequires:	libpreludedb-devel >= 0.9.7.1
 BuildRequires:	libxml2-devel
+BuildRequires:	rpmbuild(macros) >= 1.268
+Requires(post,preun):	rc-scripts
+Requires:	libprelude >= 0.9.7.2
+Requires:	libpreludedb >= 0.9.7.1
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -42,7 +44,7 @@ Header files for prelude-manager.
 Pliki nag³ówkowe dla prelude-managera.
 
 %prep
-%setup -q -n %{name}-%{version}
+%setup -q
 
 %build
 %configure
@@ -59,7 +61,7 @@ install -d $RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig}
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/%{name}
 
-install -d $RPM_BUILD_ROOT/etc/prelude/profile/%{name}
+install -d $RPM_BUILD_ROOT%{_sysconfdir}/prelude/profile/%{name}
 install -d $RPM_BUILD_ROOT/var/spool/prelude/%{name}
 
 %clean
@@ -67,13 +69,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/chkconfig --add prelude-manager
-if [ -f /var/lock/subsys/prelude-manager ]; then
-        %service prelude-manager restart 1>&2
-else
+if [ "$1" = 1 ]; then
 	echo "Run \"prelude-adduser add prelude-manager --uid 0 --gid 0\" before"
 	echo "starting Prelude Manager for the first time."
-        echo "Run \"/sbin/service prelude-manager start\" to start Prelude Manager."
 fi
+%service prelude-manager restart "Prelude Manager"
 
 # TODO:
 #

@@ -1,8 +1,11 @@
+#
+# TODO:		- we probably need 0.9.6 prelude/db libraries
+#
 Summary:	A Network Intrusion Detection System
 Summary(pl):	System do wykrywania intruzów w sieci
 Name:		prelude-manager
 Version:	0.9.4.1
-Release:	0.1
+Release:	0.2
 License:	GPL
 Group:		Applications
 Source0:	http://www.prelude-ids.org/download/releases/%{name}-%{version}.tar.gz
@@ -60,15 +63,15 @@ rm -rf $RPM_BUILD_ROOT
 %post
 /sbin/chkconfig --add prelude-manager
 if [ -f /var/lock/subsys/prelude-manager ]; then
-        /etc/rc.d/init.d/prelude-manager restart 1>&2
+        %service prelude-manager restart 1>&2
 else
-        echo "Run \"/etc/rc.d/init.d/prelude-manager start\" to start Prelude Manager."
+        echo "Run \"/sbin/service prelude-manager start\" to start Prelude Manager."
 fi
 
 %preun
 if [ "$1" = "0" ]; then
         if [ -f /var/lock/subsys/prelude-manager ]; then
-                /etc/rc.d/init.d/prelude-manager stop 1>&2
+                %service prelude-manager stop 1>&2
         fi
         /sbin/chkconfig --del prelude-manager
 fi

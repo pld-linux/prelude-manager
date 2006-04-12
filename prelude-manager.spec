@@ -1,11 +1,11 @@
 #
-# TODO:		- we probably need 0.9.6 prelude/db libraries
+# TODO:		- config file templates
 #
 Summary:	A Network Intrusion Detection System
 Summary(pl):	System do wykrywania intruzów w sieci
 Name:		prelude-manager
 Version:	0.9.4.1
-Release:	0.2
+Release:	0.3
 License:	GPL
 Group:		Applications
 Source0:	http://www.prelude-ids.org/download/releases/%{name}-%{version}.tar.gz
@@ -13,9 +13,11 @@ Source0:	http://www.prelude-ids.org/download/releases/%{name}-%{version}.tar.gz
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 URL:		http://www.prelude-ids.org/
+Requires:	libprelude >= 0.9.7.2
+Requires:	libpreludedb >= 0.9.7.1
 BuildRequires:	gnutls-devel
-BuildRequires:	libprelude-devel >= 0.9.0
-BuildRequires:	libpreludedb-devel >= 0.9.0
+BuildRequires:	libprelude-devel >= 0.9.7.2
+BuildRequires:	libpreludedb-devel >= 0.9.7.1
 BuildRequires:	libxml2-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -57,6 +59,9 @@ install -d $RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig}
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/%{name}
 
+install -d $RPM_BUILD_ROOT/etc/prelude/profile/%{name}
+install -d $RPM_BUILD_ROOT/var/spool/prelude/%{name}
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -65,8 +70,31 @@ rm -rf $RPM_BUILD_ROOT
 if [ -f /var/lock/subsys/prelude-manager ]; then
         %service prelude-manager restart 1>&2
 else
+	echo "Run \"prelude-adduser add prelude-manager --uid 0 --gid 0\" before"
+	echo "starting Prelude Manager for the first time."
         echo "Run \"/sbin/service prelude-manager start\" to start Prelude Manager."
 fi
+
+# TODO:
+#
+# add this to libpreludedb (as an init script or docs):
+#
+# For PostgreSQL database you have to create a new database:
+#
+# 	$ PGPASSWORD=your_password psql -U postgres
+# 	postgres=# CREATE database prelude;
+# 	postgres=# CREATE USER prelude WITH ENCRYPTED PASSWORD 'prelude' NOCREATEDB NOCREATEUSER;
+#	^D
+#	$ PGPASSWORD=prelude psql -U prelude -d prelude < /usr/share/libpreludedb/classic/pgsql.sql
+#
+# Updating  database schema:
+#
+#	$ PGPASSWORD=prelude psql -U prelude -d prelude < /usr/share/libpreludedb/classic/pgsql-update-14-1.sql
+#
+# add this to prelude-manager (as an init script or docs):
+#
+# 	 prelude-adduser add prelude-manager --uid 0 --gid 0
+#
 
 %preun
 if [ "$1" = "0" ]; then
@@ -87,10 +115,12 @@ fi
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/*
 %attr(755,root,root) %{_libdir}/%{name}/*/*.so
+%dir %{_sysconfdir}/prelude/profile/%{name}
 %{_libdir}/%{name}/*/*.la
 %{_datadir}/%{name}
 %{_var}/run/%{name}
 %{_var}/spool/%{name}
+%{_var}/spool/prelude/%{name}
 
 %files devel
 %defattr(644,root,root,755)

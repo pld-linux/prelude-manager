@@ -87,7 +87,7 @@ fi
 #	^D
 #	$ PGPASSWORD=prelude psql -U prelude -d prelude < /usr/share/libpreludedb/classic/pgsql.sql
 #
-# Updating  database schema:
+# Updating database schema:
 #
 #	$ PGPASSWORD=prelude psql -U prelude -d prelude < /usr/share/libpreludedb/classic/pgsql-update-14-1.sql
 #
@@ -98,10 +98,10 @@ fi
 
 %preun
 if [ "$1" = "0" ]; then
-        if [ -f /var/lock/subsys/prelude-manager ]; then
-                %service prelude-manager stop 1>&2
-        fi
-        /sbin/chkconfig --del prelude-manager
+	if [ -f /var/lock/subsys/prelude-manager ]; then
+		%service prelude-manager stop 1>&2
+	fi
+	/sbin/chkconfig --del prelude-manager
 fi
 
 %files

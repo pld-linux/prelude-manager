@@ -1,0 +1,5 @@
+# Prelude Manager startup configuration file
+
+# Try to define nice-level for running Prelude Manager
+SERVICE_RUN_NICE_LEVEL="+5"
+

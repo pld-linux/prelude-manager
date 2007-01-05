@@ -7,6 +7,17 @@
 # Source function library.
 . /etc/rc.d/init.d/functions
 
+# Get service config
+if [ -f /etc/sysconfig/prelude-manager ]; then
+        . /etc/sysconfig/prelude-manager
+else
+	nls "Error: %s not found" /etc/sysconfig/prelude-manager
+	nls " Prelude Manager can't be run."
+        exit 1
+fi
+
+
+
 case "$1" in
     start)
 	    if [ ! -f /var/lock/subsys/prelude-manager ]; then
@@ -49,7 +60,7 @@ case "$1" in
     ;;
 
     *)
-    echo $"Usage: $0 {start|stop|restart|condrestart|status}"
+    echo $"Usage: $0 {start|stop|reload|force-reload|status}"
     exit 1
 
 esac

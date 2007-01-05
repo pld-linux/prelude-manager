@@ -1,26 +1,30 @@
 #
 # TODO:		- config file templates
 #
+%bcond_without	tcp_wrappers
+%bcond_without	sql
+%bcond_without	xml
+
 Summary:	A Network Intrusion Detection System
 Summary(pl):	System do wykrywania intruzów w sieci
 Name:		prelude-manager
-Version:	0.9.4.1
-Release:	0.3
+Version:	0.9.7.1
+Release:	1
 License:	GPL
 Group:		Applications
 Source0:	http://www.prelude-ids.org/download/releases/%{name}-%{version}.tar.gz
-# Source0-md5:	4641da26473496b2bc43647753ff0499
+# Source0-md5:	4af593e21b41faa220d9dc9648df4a85
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 URL:		http://www.prelude-ids.org/
-BuildRequires:	gnutls-devel
-BuildRequires:	libprelude-devel >= 0.9.7.2
-BuildRequires:	libpreludedb-devel >= 0.9.7.1
-BuildRequires:	libxml2-devel
+BuildRequires:	gnutls-devel >= 1.0.17
+BuildRequires:	libprelude-devel >= 0.9.7
+%{?with_sql:BuildRequires:	libpreludedb-devel >= 0.9.4.1}
+%{?with_xml:BuildRequires:	libxml2-devel >= 2.0.0}
+%{?with_tcp_wrappers:BuildRequires:	libwrap-devel}
 BuildRequires:	rpmbuild(macros) >= 1.268
 Requires(post,preun):	rc-scripts
-Requires:	libprelude >= 0.9.7.2
-Requires:	libpreludedb >= 0.9.7.1
+Requires:	%{name}-libs >= %{version}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -30,6 +34,54 @@ normalizes events from distributed sensors.
 %description -l pl
 Prelude-Manager to serwer o wysokiej dostêpno¶ci zbieraj±cy i
 normalizuj±cy zdarzenia od rozproszonych czujników.
+
+%package libs
+Summary:	Prelude-manager shared libraries
+Summary(pl):	Biblioteki dzielone prelude-managera
+Group:		Libraries
+
+%description libs
+Prelude-manager shared libraries.
+
+%description libs -l pl
+Biblioteki dzielone prelude-managera.
+
+%package sql
+Summary:	Prelude-manager shared sql libraries
+Summary(pl):	Biblioteki dzielone sql prelude-managera
+Group:		Libraries
+Requires:	%{name}-libs = %{version}-%{release}
+Requires:	libpreludedb >= 0.9.4.1
+
+%description sql
+Prelude-manager shared sql libraries.
+
+%description sql -l pl
+Biblioteki dzielone sql prelude-managera.
+
+%package xml
+Summary:	Prelude-manager shared xml libraries
+Summary(pl):	Biblioteki dzielone xml prelude-managera
+Group:		Libraries
+Requires:	%{name}-libs = %{version}-%{release}
+
+%description xml
+Prelude-manager shared xml libraries.
+
+%description xml -l pl
+Biblioteki dzielone xml prelude-managera.
+
+%package static
+Summary:	Static prelude-manager library
+Summary(pl):	Statyczna biblioteka prelude-managera
+Group:		Development/Libraries
+Requires:	%{name}-devel = %{version}-%{release}
+
+%description static
+Static prelude-manager library.
+
+%description static -l pl
+Statyczna biblioteka prelude-managera.
 
 %package devel
 Summary:	Header files for prelude-manager
@@ -47,7 +99,12 @@ Pliki nag³ówkowe dla prelude-managera.
 %setup -q
 
 %build
-%configure
+%configure \
+	--enable-shared \
+	--enable-static \
+	--with-libwrap%{!?with_tcp_wrappers:=no} \
+	--with-libpreludedb%{!?with_sql:=no} \
+	--with-xml%{!?with_xml:=no}
 %{__make}
 
 %install
@@ -69,32 +126,14 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/chkconfig --add prelude-manager
-if [ "$1" = 1 ]; then
-	echo "Run \"prelude-adduser add prelude-manager --uid 0 --gid 0\" before"
-	echo "starting Prelude Manager for the first time."
+if [ "$1" = "1" ]; then
+%banner -e %{name} <<EOF
+Run "prelude-adduser add prelude-manager --uid 0 --gid 0" before
+starting Prelude Manager for the first time.
+
+EOF
 fi
 %service prelude-manager restart "Prelude Manager"
-
-# TODO:
-#
-# add this to libpreludedb (as an init script or docs):
-#
-# For PostgreSQL database you have to create a new database:
-#
-# 	$ PGPASSWORD=your_password psql -U postgres
-# 	postgres=# CREATE database prelude;
-# 	postgres=# CREATE USER prelude WITH ENCRYPTED PASSWORD 'prelude' NOCREATEDB NOCREATEUSER;
-#	^D
-#	$ PGPASSWORD=prelude psql -U prelude -d prelude < /usr/share/libpreludedb/classic/pgsql.sql
-#
-# Updating database schema:
-#
-#	$ PGPASSWORD=prelude psql -U prelude -d prelude < /usr/share/libpreludedb/classic/pgsql-update-14-1.sql
-#
-# add this to prelude-manager (as an init script or docs):
-#
-# 	 prelude-adduser add prelude-manager --uid 0 --gid 0
-#
 
 %preun
 if [ "$1" = "0" ]; then
@@ -112,15 +151,34 @@ fi
 %attr(754,root,root) /etc/rc.d/init.d/%{name}
 %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/%{name}
 %attr(755,root,root) %{_bindir}/%{name}
-%dir %{_libdir}/%{name}
-%dir %{_libdir}/%{name}/*
-%attr(755,root,root) %{_libdir}/%{name}/*/*.so
 %dir %{_sysconfdir}/prelude/profile/%{name}
-%{_libdir}/%{name}/*/*.la
 %{_datadir}/%{name}
 %{_var}/run/%{name}
 %{_var}/spool/%{name}
-%{_var}/spool/prelude/%{name}
+%{_var}/spool/prelude
+
+%files libs
+%defattr(644,root,root,755)
+%dir %{_libdir}/%{name}
+%dir %{_libdir}/%{name}/*
+%attr(755,root,root) %{_libdir}/%{name}/*/*.so
+%{_libdir}/%{name}/*/*.la
+%exclude %{_libdir}/%{name}/reports/db.*
+%exclude %{_libdir}/%{name}/reports/xmlmod.*
+
+%files xml
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/%{name}/reports/xmlmod.so
+%{_libdir}/%{name}/reports/xmlmod.la
+
+%files sql
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/%{name}/reports/db.so
+%{_libdir}/%{name}/reports/db.la
+
+%files static
+%defattr(644,root,root,755)
+%{_libdir}/%{name}/*/*.a
 
 %files devel
 %defattr(644,root,root,755)

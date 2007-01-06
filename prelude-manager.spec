@@ -9,7 +9,7 @@ Summary:	A Network Intrusion Detection System
 Summary(pl):	System do wykrywania intruzów w sieci
 Name:		prelude-manager
 Version:	0.9.7.1
-Release:	1
+Release:	2
 License:	GPL
 Group:		Applications
 Source0:	http://www.prelude-ids.org/download/releases/%{name}-%{version}.tar.gz
@@ -102,9 +102,9 @@ Pliki nag³ówkowe dla prelude-managera.
 %configure \
 	--enable-shared \
 	--enable-static \
-	--with-libwrap%{!?with_tcp_wrappers:=no} \
-	--with-libpreludedb%{!?with_sql:=no} \
-	--with-xml%{!?with_xml:=no}
+	--with%{!?with_tcp_wrappers:out}-libwrap \
+	--with%{!?with_sql:out}-libpreludedb \
+	--with%{!?with_xml:out}-xml
 %{__make}
 
 %install
@@ -114,6 +114,9 @@ install -d $RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
+
+# are generating wrong dependencies (and are not needed anyway)
+find $RPM_BUILD_ROOT -iregex .*.la -exec rm {} \;
 
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/%{name}
@@ -162,19 +165,16 @@ fi
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/*
 %attr(755,root,root) %{_libdir}/%{name}/*/*.so
-%{_libdir}/%{name}/*/*.la
 %exclude %{_libdir}/%{name}/reports/db.*
 %exclude %{_libdir}/%{name}/reports/xmlmod.*
 
 %files xml
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/reports/xmlmod.so
-%{_libdir}/%{name}/reports/xmlmod.la
 
 %files sql
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/reports/db.so
-%{_libdir}/%{name}/reports/db.la
 
 %files static
 %defattr(644,root,root,755)

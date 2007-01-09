@@ -1,10 +1,11 @@
 #
 # TODO:		- config file templates
 #
+# Conditional build:
 %bcond_without	tcp_wrappers
 %bcond_without	sql
 %bcond_without	xml
-
+#
 Summary:	A Network Intrusion Detection System
 Summary(pl):	System do wykrywania intruzów w sieci
 Name:		prelude-manager

@@ -25,7 +25,6 @@ BuildRequires:	libprelude-devel >= 0.9.7
 %{?with_tcp_wrappers:BuildRequires:	libwrap-devel}
 BuildRequires:	rpmbuild(macros) >= 1.268
 Requires(post,preun):	rc-scripts
-Requires:	%{name}-libs = %{version}-%{release}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -36,47 +35,36 @@ normalizes events from distributed sensors.
 Prelude-Manager to serwer o wysokiej dostêpno¶ci zbieraj±cy i
 normalizuj±cy zdarzenia od rozproszonych czujników.
 
-%package libs
-Summary:	Prelude-manager shared libraries
-Summary(pl):	Biblioteki dzielone prelude-managera
-Group:		Libraries
-
-%description libs
-Prelude-manager shared libraries.
-
-%description libs -l pl
-Biblioteki dzielone prelude-managera.
-
 %package sql
-Summary:	Prelude-manager shared sql libraries
-Summary(pl):	Biblioteki dzielone sql prelude-managera
+Summary:	Prelude-manager SQL plugin
+Summary(pl):	Wtyczka SQL dla prelude-managera
 Group:		Libraries
-Requires:	%{name}-libs = %{version}-%{release}
+Requires:	%{name} = %{version}-%{release}
 Requires:	libpreludedb >= 0.9.4.1
 
 %description sql
-Prelude-manager shared sql libraries.
+Prelude-manager SQL plugin.
 
 %description sql -l pl
-Biblioteki dzielone sql prelude-managera.
+Wtyczka SQL dla prelude-managera.
 
 %package xml
-Summary:	Prelude-manager shared xml libraries
-Summary(pl):	Biblioteki dzielone xml prelude-managera
+Summary:	Prelude-manager XML plugin
+Summary(pl):	Wtyczka XML dla prelude-managera
 Group:		Libraries
-Requires:	%{name}-libs = %{version}-%{release}
+Requires:	%{name} = %{version}-%{release}
 
 %description xml
-Prelude-manager shared xml libraries.
+Prelude-manager XML plugin.
 
 %description xml -l pl
-Biblioteki dzielone xml prelude-managera.
+Wtyczka XML dla prelude-managera.
 
 %package devel
 Summary:	Header files for prelude-manager
 Summary(pl):	Pliki nag³ówkowe dla prelude-managera
 Group:		Development/Libraries
-Requires:	%{name} = %{version}-%{release}
+Requires:	libprelude-devel >= 0.9.7
 
 %description devel
 Header files for prelude-manager.
@@ -84,25 +72,11 @@ Header files for prelude-manager.
 %description devel -l pl
 Pliki nag³ówkowe dla prelude-managera.
 
-%package static
-Summary:	Static prelude-manager library
-Summary(pl):	Statyczna biblioteka prelude-managera
-Group:		Development/Libraries
-Requires:	%{name}-devel = %{version}-%{release}
-
-%description static
-Static prelude-manager library.
-
-%description static -l pl
-Statyczna biblioteka prelude-managera.
-
 %prep
 %setup -q
 
 %build
 %configure \
-	--enable-shared \
-	--enable-static \
 	--with%{!?with_tcp_wrappers:out}-libwrap \
 	--with%{!?with_sql:out}-libpreludedb \
 	--with%{!?with_xml:out}-xml
@@ -149,24 +123,21 @@ fi
 %files
 %defattr(644,root,root,755)
 %doc AUTHORS ChangeLog NEWS README
-%dir %{_sysconfdir}/%{name}
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/%{name}/*.*
-%attr(754,root,root) /etc/rc.d/init.d/%{name}
-%config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/%{name}
 %attr(755,root,root) %{_bindir}/%{name}
-%dir %{_sysconfdir}/prelude/profile/%{name}
-%{_datadir}/%{name}
-%{_var}/run/%{name}
-%{_var}/spool/%{name}
-%{_var}/spool/prelude
-
-%files libs
-%defattr(644,root,root,755)
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/*
 %attr(755,root,root) %{_libdir}/%{name}/*/*.so
 %exclude %{_libdir}/%{name}/reports/db.*
 %exclude %{_libdir}/%{name}/reports/xmlmod.*
+%dir %{_sysconfdir}/%{name}
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/%{name}/*.*
+%attr(754,root,root) /etc/rc.d/init.d/%{name}
+%config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/%{name}
+%dir %{_sysconfdir}/prelude/profile/%{name}
+%{_datadir}/%{name}
+%{_var}/run/%{name}
+%{_var}/spool/%{name}
+%{_var}/spool/prelude
 
 %files xml
 %defattr(644,root,root,755)
@@ -179,7 +150,3 @@ fi
 %files devel
 %defattr(644,root,root,755)
 %{_includedir}/%{name}
-
-%files static
-%defattr(644,root,root,755)
-%{_libdir}/%{name}/*/*.a

@@ -2,9 +2,9 @@
 # TODO:		- config file templates
 #
 # Conditional build:
-%bcond_without	tcp_wrappers
-%bcond_without	sql
-%bcond_without	xml
+%bcond_without	tcp_wrappers	# build without tcp wrappers support
+%bcond_without	sql		# don't build sql plugin
+%bcond_without	xml		# don't build xml plugin
 #
 Summary:	A Network Intrusion Detection System
 Summary(pl):	System do wykrywania intruzów w sieci
@@ -25,7 +25,7 @@ BuildRequires:	libprelude-devel >= 0.9.7
 %{?with_tcp_wrappers:BuildRequires:	libwrap-devel}
 BuildRequires:	rpmbuild(macros) >= 1.268
 Requires(post,preun):	rc-scripts
-Requires:	%{name}-libs >= %{version}
+Requires:	%{name}-libs = %{version}-%{release}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -72,18 +72,6 @@ Prelude-manager shared xml libraries.
 %description xml -l pl
 Biblioteki dzielone xml prelude-managera.
 
-%package static
-Summary:	Static prelude-manager library
-Summary(pl):	Statyczna biblioteka prelude-managera
-Group:		Development/Libraries
-Requires:	%{name}-devel = %{version}-%{release}
-
-%description static
-Static prelude-manager library.
-
-%description static -l pl
-Statyczna biblioteka prelude-managera.
-
 %package devel
 Summary:	Header files for prelude-manager
 Summary(pl):	Pliki nag³ówkowe dla prelude-managera
@@ -95,6 +83,18 @@ Header files for prelude-manager.
 
 %description devel -l pl
 Pliki nag³ówkowe dla prelude-managera.
+
+%package static
+Summary:	Static prelude-manager library
+Summary(pl):	Statyczna biblioteka prelude-managera
+Group:		Development/Libraries
+Requires:	%{name}-devel = %{version}-%{release}
+
+%description static
+Static prelude-manager library.
+
+%description static -l pl
+Statyczna biblioteka prelude-managera.
 
 %prep
 %setup -q
@@ -110,14 +110,13 @@ Pliki nag³ówkowe dla prelude-managera.
 
 %install
 rm -rf $RPM_BUILD_ROOT
-
 install -d $RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
 # are generating wrong dependencies (and are not needed anyway)
-find $RPM_BUILD_ROOT -iregex .*.la -exec rm {} \;
+rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/*/*.la
 
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/%{name}
@@ -177,10 +176,10 @@ fi
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/reports/db.so
 
-%files static
-%defattr(644,root,root,755)
-%{_libdir}/%{name}/*/*.a
-
 %files devel
 %defattr(644,root,root,755)
 %{_includedir}/%{name}
+
+%files static
+%defattr(644,root,root,755)
+%{_libdir}/%{name}/*/*.a

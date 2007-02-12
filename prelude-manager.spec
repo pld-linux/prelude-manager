@@ -7,7 +7,7 @@
 %bcond_without	xml		# don't build xml plugin
 #
 Summary:	A Network Intrusion Detection System
-Summary(pl):	System do wykrywania intruz體 w sieci
+Summary(pl.UTF-8):   System do wykrywania intruz贸w w sieci
 Name:		prelude-manager
 Version:	0.9.7.1
 Release:	2
@@ -31,13 +31,13 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 The Prelude-Manager is a high-availability server which collects and
 normalizes events from distributed sensors.
 
-%description -l pl
-Prelude-Manager to serwer o wysokiej dost阷no禼i zbieraj眂y i
-normalizuj眂y zdarzenia od rozproszonych czujnik體.
+%description -l pl.UTF-8
+Prelude-Manager to serwer o wysokiej dost臋pno艣ci zbieraj膮cy i
+normalizuj膮cy zdarzenia od rozproszonych czujnik贸w.
 
 %package sql
 Summary:	Prelude-manager SQL plugin
-Summary(pl):	Wtyczka SQL dla prelude-managera
+Summary(pl.UTF-8):   Wtyczka SQL dla prelude-managera
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	libpreludedb >= 0.9.4.1
@@ -45,32 +45,32 @@ Requires:	libpreludedb >= 0.9.4.1
 %description sql
 Prelude-manager SQL plugin.
 
-%description sql -l pl
+%description sql -l pl.UTF-8
 Wtyczka SQL dla prelude-managera.
 
 %package xml
 Summary:	Prelude-manager XML plugin
-Summary(pl):	Wtyczka XML dla prelude-managera
+Summary(pl.UTF-8):   Wtyczka XML dla prelude-managera
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 
 %description xml
 Prelude-manager XML plugin.
 
-%description xml -l pl
+%description xml -l pl.UTF-8
 Wtyczka XML dla prelude-managera.
 
 %package devel
 Summary:	Header files for prelude-manager
-Summary(pl):	Pliki nag丑wkowe dla prelude-managera
+Summary(pl.UTF-8):   Pliki nag艂贸wkowe dla prelude-managera
 Group:		Development/Libraries
 Requires:	libprelude-devel >= 0.9.7
 
 %description devel
 Header files for prelude-manager.
 
-%description devel -l pl
-Pliki nag丑wkowe dla prelude-managera.
+%description devel -l pl.UTF-8
+Pliki nag艂贸wkowe dla prelude-managera.
 
 %prep
 %setup -q

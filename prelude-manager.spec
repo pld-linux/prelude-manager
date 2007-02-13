@@ -7,7 +7,7 @@
 %bcond_without	xml		# don't build xml plugin
 #
 Summary:	A Network Intrusion Detection System
-Summary(pl.UTF-8):   System do wykrywania intruzów w sieci
+Summary(pl.UTF-8):	System do wykrywania intruzów w sieci
 Name:		prelude-manager
 Version:	0.9.7.1
 Release:	2
@@ -37,7 +37,7 @@ normalizujący zdarzenia od rozproszonych czujników.
 
 %package sql
 Summary:	Prelude-manager SQL plugin
-Summary(pl.UTF-8):   Wtyczka SQL dla prelude-managera
+Summary(pl.UTF-8):	Wtyczka SQL dla prelude-managera
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	libpreludedb >= 0.9.4.1
@@ -50,7 +50,7 @@ Wtyczka SQL dla prelude-managera.
 
 %package xml
 Summary:	Prelude-manager XML plugin
-Summary(pl.UTF-8):   Wtyczka XML dla prelude-managera
+Summary(pl.UTF-8):	Wtyczka XML dla prelude-managera
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 
@@ -62,7 +62,7 @@ Wtyczka XML dla prelude-managera.
 
 %package devel
 Summary:	Header files for prelude-manager
-Summary(pl.UTF-8):   Pliki nagłówkowe dla prelude-managera
+Summary(pl.UTF-8):	Pliki nagłówkowe dla prelude-managera
 Group:		Development/Libraries
 Requires:	libprelude-devel >= 0.9.7
 

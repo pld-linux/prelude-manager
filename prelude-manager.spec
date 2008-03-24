@@ -11,7 +11,7 @@ Summary(pl.UTF-8):	System do wykrywania intruzów w sieci
 Name:		prelude-manager
 Version:	0.9.11.2
 Release:	1
-License:	GPL
+License:	GPL v2+
 Group:		Applications
 Source0:	http://www.prelude-ids.org/download/releases/%{name}-%{version}.tar.gz
 # Source0-md5:	4f2935d7c77be0113cea89c4681aebed

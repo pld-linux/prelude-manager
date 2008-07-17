@@ -1,5 +1,7 @@
 #
-# TODO:		- config file templates
+# TODO:
+# - config file templates
+# - system libev?
 #
 # Conditional build:
 %bcond_without	tcp_wrappers	# build without tcp wrappers support
@@ -9,15 +11,16 @@
 Summary:	A Network Intrusion Detection System
 Summary(pl.UTF-8):	System do wykrywania intruzów w sieci
 Name:		prelude-manager
-Version:	0.9.11.2
+Version:	0.9.13
 Release:	1
 License:	GPL v2+
 Group:		Applications
-Source0:	http://www.prelude-ids.org/download/releases/%{name}-%{version}.tar.gz
-# Source0-md5:	4f2935d7c77be0113cea89c4681aebed
+#Source0Download: http://www.prelude-ids.com/developpement/telechargement/index.html
+Source0:	http://www.prelude-ids.com/download/releases/prelude-manager/%{name}-%{version}.tar.gz
+# Source0-md5:	b83b6bf8ce7ca3976446c830c0602ce2
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
-URL:		http://www.prelude-ids.org/
+URL:		http://www.prelude-ids.com/
 BuildRequires:	gnutls-devel >= 1.0.17
 BuildRequires:	libprelude-devel >= 0.9.7
 %{?with_sql:BuildRequires:	libpreludedb-devel >= 0.9.4.1}

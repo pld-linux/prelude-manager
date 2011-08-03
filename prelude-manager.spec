@@ -3,29 +3,24 @@
 # - config file templates
 # - system libev?
 #
-# Conditional build:
-%bcond_without	tcp_wrappers	# build without tcp wrappers support
-%bcond_without	sql		# don't build sql plugin
-%bcond_without	xml		# don't build xml plugin
-#
 Summary:	A Network Intrusion Detection System
 Summary(pl.UTF-8):	System do wykrywania intruzów w sieci
 Name:		prelude-manager
-Version:	0.9.13
+Version:	1.0.0
 Release:	1
 License:	GPL v2+
 Group:		Applications
 #Source0Download: http://www.prelude-ids.com/developpement/telechargement/index.html
 Source0:	http://www.prelude-ids.com/download/releases/prelude-manager/%{name}-%{version}.tar.gz
-# Source0-md5:	b83b6bf8ce7ca3976446c830c0602ce2
+# Source0-md5:	d9236471bc7c0d420755249680261d18
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 URL:		http://www.prelude-ids.com/
 BuildRequires:	gnutls-devel >= 1.0.17
-BuildRequires:	libprelude-devel >= 0.9.7
-%{?with_sql:BuildRequires:	libpreludedb-devel >= 0.9.4.1}
-%{?with_xml:BuildRequires:	libxml2-devel >= 2.0.0}
-%{?with_tcp_wrappers:BuildRequires:	libwrap-devel}
+BuildRequires:	libprelude-devel >= %{version}
+BuildRequires:	libpreludedb-devel >= %{version}
+BuildRequires:	libwrap-devel
+BuildRequires:	libxml2-devel >= 2.0.0
 BuildRequires:	rpmbuild(macros) >= 1.268
 Requires(post,preun):	rc-scripts
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -43,7 +38,7 @@ Summary:	Prelude-manager SQL plugin
 Summary(pl.UTF-8):	Wtyczka SQL dla prelude-managera
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	libpreludedb >= 0.9.4.1
+Requires:	libpreludedb >= %{version}
 
 %description sql
 Prelude-manager SQL plugin.
@@ -79,10 +74,8 @@ Pliki nagłówkowe dla prelude-managera.
 %setup -q
 
 %build
-%configure \
-	--with%{!?with_tcp_wrappers:out}-libwrap \
-	--with%{!?with_sql:out}-libpreludedb \
-	--with%{!?with_xml:out}-xml
+%configure
+
 %{__make}
 
 %install

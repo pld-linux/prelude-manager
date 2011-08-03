@@ -101,7 +101,7 @@ rm -rf $RPM_BUILD_ROOT
 /sbin/chkconfig --add prelude-manager
 if [ "$1" = "1" ]; then
 %banner -e %{name} <<EOF
-Run "prelude-adduser add prelude-manager --uid 0 --gid 0" before
+Run "prelude-admin add prelude-manager --uid 0 --gid 0" before
 starting Prelude Manager for the first time.
 
 EOF

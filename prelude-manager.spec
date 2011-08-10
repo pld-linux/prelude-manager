@@ -3,8 +3,8 @@
 # - config file templates
 # - system libev?
 #
-Summary:	A Network Intrusion Detection System
-Summary(pl.UTF-8):	System do wykrywania intruzów w sieci
+Summary:	A Network Intrusion Detection System - events collector
+Summary(pl.UTF-8):	System do wykrywania intruzów w sieci - serwer zbierający zdarzenia
 Name:		prelude-manager
 Version:	1.0.0
 Release:	1
@@ -62,7 +62,7 @@ Wtyczka XML dla prelude-managera.
 Summary:	Header files for prelude-manager
 Summary(pl.UTF-8):	Pliki nagłówkowe dla prelude-managera
 Group:		Development/Libraries
-Requires:	libprelude-devel >= 0.9.7
+Requires:	libprelude-devel >= %{version}
 
 %description devel
 Header files for prelude-manager.

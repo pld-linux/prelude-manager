@@ -1,28 +1,38 @@
 #
 # TODO:
 # - config file templates
-# - system libev?
+#
+# Conditional build:
+%bcond_without	maxminddb	# MaxMind GeoIP DB support
+%bcond_with	system_libev	# system libev (expects libev built with EV_MULTIPLICITY=0)
 #
 Summary:	A Network Intrusion Detection System - events collector
 Summary(pl.UTF-8):	System do wykrywania intruzów w sieci - serwer zbierający zdarzenia
 Name:		prelude-manager
-Version:	1.0.0
+Version:	3.1.0
 Release:	1
 License:	GPL v2+
-Group:		Applications
-#Source0Download: http://www.prelude-ids.com/developpement/telechargement/index.html
-Source0:	http://www.prelude-ids.com/download/releases/prelude-manager/%{name}-%{version}.tar.gz
-# Source0-md5:	d9236471bc7c0d420755249680261d18
+Group:		Applications/Networking
+#Source0Download: https://www.prelude-siem.org/projects/prelude/files
+Source0:	https://www.prelude-siem.org/attachments/download/726/%{name}-%{version}.tar.gz
+# Source0-md5:	607fb0ab2e68ca6b300d9573902d056c
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
-URL:		http://www.prelude-ids.com/
+URL:		https://www.prelude-siem.org/
+BuildRequires:	autoconf >= 2.59
+BuildRequires:	automake >= 1:1.9
 BuildRequires:	gnutls-devel >= 1.0.17
+%{?with_system_libev:BuildRequires:	libev-devel}
+%{?with_maxminddb:BuildRequires:	libmaxminddb-devel >= 1.0.0}
 BuildRequires:	libprelude-devel >= %{version}
 BuildRequires:	libpreludedb-devel >= %{version}
+BuildRequires:	libtool
 BuildRequires:	libwrap-devel
 BuildRequires:	libxml2-devel >= 2.0.0
+BuildRequires:	pkgconfig
 BuildRequires:	rpmbuild(macros) >= 1.268
 Requires(post,preun):	rc-scripts
+%{?with_maxminddb:Requires:	libmaxminddb >= 1.0.0}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -73,8 +83,25 @@ Pliki nagłówkowe dla prelude-managera.
 %prep
 %setup -q
 
+%if %{with system_libev}
+# stub
+echo 'all:' > libev/Makefile
+%endif
+
 %build
-%configure
+# rebuild auto* for as-needed to work
+%{__libtoolize}
+%{__aclocal} -I m4 -I libmissing/m4
+%{__autoconf}
+%{__autoheader}
+%{__automake}
+%configure \
+%if %{with system_libev}
+	LIBEV_CFLAGS=" " \
+	LIBEV_LIBS="-lev" \
+	--with-libev \
+%endif
+	%{!?with_libmaxminddb:--with-libmaxminddb}
 
 %{__make}
 
@@ -86,13 +113,20 @@ install -d $RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig}
 	DESTDIR=$RPM_BUILD_ROOT
 
 # are generating wrong dependencies (and are not needed anyway)
-rm -f $RPM_BUILD_ROOT%{_libdir}/%{name}/*/*.la
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/%{name}/*/*.la
 
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/%{name}
 
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/prelude/profile/%{name}
-install -d $RPM_BUILD_ROOT/var/spool/prelude/%{name}
+
+install -d $RPM_BUILD_ROOT%{systemdtmpfilesdir}
+cat >$RPM_BUILD_ROOT%{systemdtmpfilesdir}/%{name}.conf <<EOF
+d /var/run/%{name} 0700 root root -
+EOF
+
+# packaged as %doc
+%{__rm} $RPM_BUILD_ROOT%{_docdir}/%{name}/smtp/template.example
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -118,22 +152,28 @@ fi
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS ChangeLog NEWS README
-%attr(755,root,root) %{_bindir}/%{name}
+%doc AUTHORS ChangeLog NEWS README plugins/reports/smtp/template.example
+%attr(755,root,root) %{_bindir}/prelude-manager
 %dir %{_libdir}/%{name}
-%dir %{_libdir}/%{name}/*
-%attr(755,root,root) %{_libdir}/%{name}/*/*.so
-%exclude %{_libdir}/%{name}/reports/db.*
-%exclude %{_libdir}/%{name}/reports/xmlmod.*
-%dir %{_sysconfdir}/%{name}
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/%{name}/*.*
+%dir %{_libdir}/%{name}/decodes
+%attr(755,root,root) %{_libdir}/%{name}/decodes/*.so
+%dir %{_libdir}/%{name}/filters
+%attr(755,root,root) %{_libdir}/%{name}/filters/*.so
+%dir %{_libdir}/%{name}/reports
+%attr(755,root,root) %{_libdir}/%{name}/reports/debug.so
+%attr(755,root,root) %{_libdir}/%{name}/reports/smtp.so
+%attr(755,root,root) %{_libdir}/%{name}/reports/textmod.so
+%attr(700,root,root) %dir %{_sysconfdir}/%{name}
+%attr(600,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/%{name}/prelude-manager.conf
 %attr(754,root,root) /etc/rc.d/init.d/%{name}
 %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/%{name}
 %dir %{_sysconfdir}/prelude/profile/%{name}
 %{_datadir}/%{name}
-%{_var}/run/%{name}
-%{_var}/spool/%{name}
-%{_var}/spool/prelude
+%attr(700,root,root) %dir %{_var}/run/%{name}
+%{systemdtmpfilesdir}/prelude-manager.conf
+%attr(700,root,root) %dir %{_var}/spool/prelude-manager
+%attr(700,root,root) %dir %{_var}/spool/prelude-manager/failover
+%attr(700,root,root) %dir %{_var}/spool/prelude-manager/scheduler
 %{_mandir}/man1/prelude-manager.1*
 
 %files xml

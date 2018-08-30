@@ -9,13 +9,13 @@
 Summary:	A Network Intrusion Detection System - events collector
 Summary(pl.UTF-8):	System do wykrywania intruzów w sieci - serwer zbierający zdarzenia
 Name:		prelude-manager
-Version:	3.1.0
-Release:	2
+Version:	4.1.1
+Release:	1
 License:	GPL v2+
 Group:		Applications/Networking
 #Source0Download: https://www.prelude-siem.org/projects/prelude/files
-Source0:	https://www.prelude-siem.org/attachments/download/726/%{name}-%{version}.tar.gz
-# Source0-md5:	607fb0ab2e68ca6b300d9573902d056c
+Source0:	https://www.prelude-siem.org/attachments/download/836/%{name}-%{version}.tar.gz
+# Source0-md5:	f821e3a5440b8a47117f2610d72174ab
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 URL:		https://www.prelude-siem.org/
@@ -24,14 +24,15 @@ BuildRequires:	automake >= 1:1.9
 BuildRequires:	gnutls-devel >= 1.0.17
 %{?with_system_libev:BuildRequires:	libev-devel}
 %{?with_maxminddb:BuildRequires:	libmaxminddb-devel >= 1.0.0}
-BuildRequires:	libprelude-devel >= %{version}
-BuildRequires:	libpreludedb-devel >= %{version}
+BuildRequires:	libprelude-devel >= 4.1.0
+BuildRequires:	libpreludedb-devel >= 4.1.0
 BuildRequires:	libtool
 BuildRequires:	libwrap-devel
 BuildRequires:	libxml2-devel >= 2.0.0
 BuildRequires:	pkgconfig
 BuildRequires:	rpmbuild(macros) >= 1.268
 Requires(post,preun):	rc-scripts
+Requires:	gnutls-libs >= 1.0.17
 %{?with_maxminddb:Requires:	libmaxminddb >= 1.0.0}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -48,7 +49,7 @@ Summary:	Prelude-manager SQL plugin
 Summary(pl.UTF-8):	Wtyczka SQL dla prelude-managera
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	libpreludedb >= %{version}
+Requires:	libpreludedb >= 4.1.0
 
 %description sql
 Prelude-manager SQL plugin.
@@ -72,7 +73,7 @@ Wtyczka XML dla prelude-managera.
 Summary:	Header files for prelude-manager
 Summary(pl.UTF-8):	Pliki nagłówkowe dla prelude-managera
 Group:		Development/Libraries
-Requires:	libprelude-devel >= %{version}
+Requires:	libprelude-devel >= 4.1.0
 
 %description devel
 Header files for prelude-manager.

@@ -6,16 +6,17 @@
 %bcond_without	maxminddb	# MaxMind GeoIP DB support
 %bcond_with	system_libev	# system libev (expects libev built with EV_MULTIPLICITY=0)
 #
+%define	libprelude_ver	5.1.0
 Summary:	A Network Intrusion Detection System - events collector
 Summary(pl.UTF-8):	System do wykrywania intruzów w sieci - serwer zbierający zdarzenia
 Name:		prelude-manager
-Version:	4.1.1
-Release:	2
+Version:	5.1.0
+Release:	1
 License:	GPL v2+
 Group:		Applications/Networking
 #Source0Download: https://www.prelude-siem.org/projects/prelude/files
-Source0:	https://www.prelude-siem.org/attachments/download/836/%{name}-%{version}.tar.gz
-# Source0-md5:	f821e3a5440b8a47117f2610d72174ab
+Source0:	https://www.prelude-siem.org/attachments/download/1176/%{name}-%{version}.tar.gz
+# Source0-md5:	6110b74915fba661a0886e45fbcad7a9
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 URL:		https://www.prelude-siem.org/
@@ -24,8 +25,8 @@ BuildRequires:	automake >= 1:1.9
 BuildRequires:	gnutls-devel >= 1.0.17
 %{?with_system_libev:BuildRequires:	libev-devel}
 %{?with_maxminddb:BuildRequires:	libmaxminddb-devel >= 1.0.0}
-BuildRequires:	libprelude-devel >= 4.1.0
-BuildRequires:	libpreludedb-devel >= 4.1.0
+BuildRequires:	libprelude-devel >= %{libprelude_ver}
+BuildRequires:	libpreludedb-devel >= %{libprelude_ver}
 BuildRequires:	libtool
 BuildRequires:	libwrap-devel
 BuildRequires:	libxml2-devel >= 2.0.0
@@ -49,7 +50,7 @@ Summary:	Prelude-manager SQL plugin
 Summary(pl.UTF-8):	Wtyczka SQL dla prelude-managera
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	libpreludedb >= 4.1.0
+Requires:	libpreludedb >= %{libprelude_ver}
 
 %description sql
 Prelude-manager SQL plugin.
@@ -73,7 +74,7 @@ Wtyczka XML dla prelude-managera.
 Summary:	Header files for prelude-manager
 Summary(pl.UTF-8):	Pliki nagłówkowe dla prelude-managera
 Group:		Development/Libraries
-Requires:	libprelude-devel >= 4.1.0
+Requires:	libprelude-devel >= %{libprelude_ver}
 
 %description devel
 Header files for prelude-manager.

@@ -12,7 +12,7 @@ Summary:	A Network Intrusion Detection System - events collector
 Summary(pl.UTF-8):	System do wykrywania intruzów w sieci - serwer zbierający zdarzenia
 Name:		prelude-manager
 Version:	5.2.0
-Release:	1
+Release:	2
 License:	GPL v2+
 Group:		Applications/Networking
 #Source0Download: https://www.prelude-siem.org/projects/prelude/files
@@ -20,6 +20,7 @@ Source0:	https://www.prelude-siem.org/attachments/download/1398/%{name}-%{versio
 # Source0-md5:	adfbb45ce1607ccf5607a9bd2f9aa800
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
+Patch0:		%{name}-includes.patch
 URL:		https://www.prelude-siem.org/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.9
@@ -98,6 +99,7 @@ Pliki nagłówkowe dla prelude-managera.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %if %{with system_libev}
 # stub

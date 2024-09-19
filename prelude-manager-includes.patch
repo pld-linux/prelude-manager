@@ -1,0 +1,10 @@
+--- prelude-manager-5.2.0/plugins/reports/xmlmod/xmlmod.c.orig	2020-09-09 16:42:01.105000000 +0200
++++ prelude-manager-5.2.0/plugins/reports/xmlmod/xmlmod.c	2024-09-19 22:07:11.297248245 +0200
+@@ -24,6 +24,7 @@
+ #include "config.h"
+ 
+ #include <stdio.h>
++#include <stdlib.h>
+ #include <string.h>
+ #include <stdarg.h>
+ #include <libxml/parser.h>

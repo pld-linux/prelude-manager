@@ -6,17 +6,18 @@
 %bcond_without	maxminddb	# MaxMind GeoIP DB support
 %bcond_with	system_libev	# system libev (expects libev built with EV_MULTIPLICITY=0)
 #
-%define	libprelude_ver	5.1.0
+%define	libprelude_ver	%{version}
+
 Summary:	A Network Intrusion Detection System - events collector
 Summary(pl.UTF-8):	System do wykrywania intruzów w sieci - serwer zbierający zdarzenia
 Name:		prelude-manager
-Version:	5.1.0
+Version:	5.2.0
 Release:	1
 License:	GPL v2+
 Group:		Applications/Networking
 #Source0Download: https://www.prelude-siem.org/projects/prelude/files
-Source0:	https://www.prelude-siem.org/attachments/download/1176/%{name}-%{version}.tar.gz
-# Source0-md5:	6110b74915fba661a0886e45fbcad7a9
+Source0:	https://www.prelude-siem.org/attachments/download/1398/%{name}-%{version}.tar.gz
+# Source0-md5:	adfbb45ce1607ccf5607a9bd2f9aa800
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 URL:		https://www.prelude-siem.org/
@@ -30,6 +31,7 @@ BuildRequires:	libpreludedb-devel >= %{libprelude_ver}
 BuildRequires:	libtool
 BuildRequires:	libwrap-devel
 BuildRequires:	libxml2-devel >= 2.0.0
+BuildRequires:	net-snmp-devel
 BuildRequires:	pkgconfig
 BuildRequires:	rpmbuild(macros) >= 1.268
 Requires(post,preun):	rc-scripts
@@ -44,6 +46,18 @@ normalizes events from distributed sensors.
 %description -l pl.UTF-8
 Prelude-Manager to serwer o wysokiej dostępności zbierający i
 normalizujący zdarzenia od rozproszonych czujników.
+
+%package snmp
+Summary:	Prelude-manager SNMP plugin
+Summary(pl.UTF-8):	Wtyczka SNMP dla prelude-managera
+Group:		Libraries
+Requires:	%{name} = %{version}-%{release}
+
+%description snmp
+Prelude-manager SNMP plugin.
+
+%description snmp -l pl.UTF-8
+Wtyczka SNMP dla prelude-managera.
 
 %package sql
 Summary:	Prelude-manager SQL plugin
@@ -163,12 +177,14 @@ fi
 %attr(755,root,root) %{_libdir}/%{name}/filters/*.so
 %dir %{_libdir}/%{name}/reports
 %attr(755,root,root) %{_libdir}/%{name}/reports/debug.so
+%attr(755,root,root) %{_libdir}/%{name}/reports/relaying.so
+%attr(755,root,root) %{_libdir}/%{name}/reports/script.so
 %attr(755,root,root) %{_libdir}/%{name}/reports/smtp.so
 %attr(755,root,root) %{_libdir}/%{name}/reports/textmod.so
 %attr(700,root,root) %dir %{_sysconfdir}/%{name}
 %attr(600,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/%{name}/prelude-manager.conf
-%attr(754,root,root) /etc/rc.d/init.d/%{name}
-%config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/%{name}
+%attr(754,root,root) /etc/rc.d/init.d/prelude-manager
+%config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/prelude-manager
 %dir %{_sysconfdir}/prelude/profile/%{name}
 %{_datadir}/%{name}
 %attr(700,root,root) %dir %{_var}/run/%{name}
@@ -178,14 +194,19 @@ fi
 %attr(700,root,root) %dir %{_var}/spool/prelude-manager/scheduler
 %{_mandir}/man1/prelude-manager.1*
 
-%files xml
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/%{name}/reports/xmlmod.so
-
 %files sql
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/%{name}/reports/db.so
 
+%files snmp
+%defattr(644,root,root,755)
+%doc plugins/reports/snmp/PRELUDE-SIEM-MIB.mib
+%attr(755,root,root) %{_libdir}/%{name}/reports/snmp.so
+
+%files xml
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/%{name}/reports/xmlmod.so
+
 %files devel
 %defattr(644,root,root,755)
-%{_includedir}/%{name}
+%{_includedir}/prelude-manager

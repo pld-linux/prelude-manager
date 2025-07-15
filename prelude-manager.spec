@@ -99,7 +99,7 @@ Pliki nagłówkowe dla prelude-managera.
 
 %prep
 %setup -q
-%patch0 -p1
+%patch -P0 -p1
 
 %if %{with system_libev}
 # stub
